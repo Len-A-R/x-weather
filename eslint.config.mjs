@@ -1,21 +1,49 @@
-import js from "@eslint/js";
+import react from "eslint-plugin-react";
+import typescriptEslint from "@typescript-eslint/eslint-plugin";
+import typescriptParser from "@typescript-eslint/parser";
 import globals from "globals";
-import tseslint from "typescript-eslint";
-import pluginReact from "eslint-plugin-react";
-import json from "@eslint/json";
-import markdown from "@eslint/markdown";
-import css from "@eslint/css";
-import { defineConfig } from "eslint/config";
+import reactRecommended from "eslint-plugin-react/configs/recommended.js";
+import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 
-
-export default defineConfig([
-  { files: ["**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"], plugins: { js }, extends: ["js/recommended"] },
-  { files: ["**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"], languageOptions: { globals: globals.browser } },
-  tseslint.configs.recommended,
-  pluginReact.configs.flat.recommended,
-  { files: ["**/*.json"], plugins: { json }, language: "json/json", extends: ["json/recommended"] },
-  { files: ["**/*.jsonc"], plugins: { json }, language: "json/jsonc", extends: ["json/recommended"] },
-  { files: ["**/*.json5"], plugins: { json }, language: "json/json5", extends: ["json/recommended"] },
-  { files: ["**/*.md"], plugins: { markdown }, language: "markdown/gfm", extends: ["markdown/recommended"] },
-  { files: ["**/*.css"], plugins: { css }, language: "css/css", extends: ["css/recommended"] },
-]);
+export default [
+  {
+    ignores: ["dist/**/*"],
+  },
+  {
+    files: ["**/*.{js,jsx,mjs,cjs,ts,tsx}"],
+    ignores: ["dist/**/*"],
+    ...reactRecommended,
+    settings: {
+      react: {
+        version: "detect",
+      },
+    },
+    languageOptions: {
+      ...reactRecommended.languageOptions,
+      ecmaVersion: "latest",
+      sourceType: "module",
+      parser: typescriptParser,
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
+      globals: {
+        ...globals.serviceworker,
+        ...globals.browser,
+      },
+    },
+    plugins: {
+      "@typescript-eslint": typescriptEslint,
+      react,
+    },
+    rules: {
+      //rules here
+    },
+  },
+  {
+    // Note: there should be no other properties in this object
+    ignores: ["package-lock.json"],
+  },
+  eslintPluginPrettierRecommended,
+];
